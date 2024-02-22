@@ -1,0 +1,13 @@
+Package: CompBioAnalytics
+Title: Analyze Computational Biology Omics Data
+Version: 0.0.0.9000
+Authors@R: 
+    person("Brian", "Weiner", , "briankweiner@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Basic functions to manipulate common formats used in computational biology.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Imports:
+    readr

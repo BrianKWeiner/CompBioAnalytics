@@ -13,4 +13,5 @@ Imports:
     Biobase,
     readr,
     VariantAnnotation,
-    GEOquery
+    GEOquery,
+    pheatmap

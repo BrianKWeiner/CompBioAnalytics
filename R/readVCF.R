@@ -10,7 +10,7 @@
 #'         alternate allele(s), quality, filter, and INFO fields. If `include_genotypes` is TRUE, additional columns
 #'         for genotype information will be included.
 #' @examples
-#' vcf_data <- readVCF("/Users/briankweiner/R_code/TestData/vcf_files/ALL.chr15.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz")
+#' vcf_data <- readVCF("/Users/briankweiner/R_code/TestData/vcf_files/GCA_000001215.4_current_ids.sample.vcf)
 #' head(vcf_data)
 #' @export
 #' @importFrom VariantAnnotation readVcf
@@ -30,20 +30,19 @@ readVCF <- function(file_path, include_genotypes = FALSE) {
 
   # Extract key variant information into a data frame
   variants_df <- data.frame(
-    chromosome = as.character(seqnames(rowRanges(vcf))),
-    position = start(rowRanges(vcf)),
-    id = names(rowRanges(vcf)),
-    ref = ref(vcf),
-    alt = paste(sapply(alt(vcf), function(x) paste(x, collapse = ",")), collapse = ";"),
-    qual = qual(vcf),
-    filter = sapply(filter(vcf), function(x) paste(x, collapse = ";")),
-    info = sapply(info(vcf), function(x) paste(names(x), x, sep = "=", collapse = ";"))
+    chromosome = as.character(GenomeInfoDb::seqnames(vcf@rowRanges)),
+    position = start(vcf@rowRanges),
+    id = names(vcf@rowRanges),
+    ref = as.character(vcf@fixed$REF),
+    alt = paste(sapply(vcf@fixed$ALT, function(x) paste(x, collapse = ","))),
+    qual = vcf@fixed$QUAL,
+    filter = sapply(vcf@fixed$FILTER, function(x) paste(x, collapse = ";"))
   )
 
   # Include genotype information if requested
   if (include_genotypes) {
     geno_data <- do.call(cbind, lapply(sample_names, function(sample) {
-      geno(vcf)[[sample]]
+      vcf@colData$Samples
     }))
     variants_df <- cbind(variants_df, geno_data)
   }

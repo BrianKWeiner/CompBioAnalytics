@@ -10,7 +10,7 @@
 #'         alternate allele(s), quality, filter, and INFO fields. If `include_genotypes` is TRUE, additional columns
 #'         for genotype information will be included.
 #' @examples
-#' vcf_data <- readVCF("/Users/briankweiner/R_code/TestData/vcf_files/00-All.vcf")
+#' vcf_data <- readVCF("/Users/briankweiner/R_code/TestData/vcf_files/ALL.chr15.phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz")
 #' head(vcf_data)
 #' @export
 #' @importFrom VariantAnnotation readVcf

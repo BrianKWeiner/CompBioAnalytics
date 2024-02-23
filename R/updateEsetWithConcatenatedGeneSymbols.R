@@ -25,8 +25,12 @@ updateEsetWithConcatenatedGeneSymbols <- function(eset) {
   # Update feature names with concatenated probe ID and gene symbol
   for (i in seq_along(originalProbeIds)) {
     probeId <- originalProbeIds[i]
-    symbol <- ifelse(probeId %in% names(geneSymbols), geneSymbols[probeId], "")
-    newFeatureNames[i] <- ifelse(nchar(symbol) > 0, paste(probeId, symbol, sep = "_"), probeId)
+    symbol <- ifelse(probeId %in% names(geneSymbols),
+                     geneSymbols[probeId],
+                     NA)
+    newFeatureNames[i] <- ifelse(is.na(symbol) == FALSE,
+                                 paste(probeId, symbol, sep = "_"),
+                                 probeId)
   }
 
   # Update the featureNames of the eset

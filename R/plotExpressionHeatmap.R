@@ -20,16 +20,28 @@
 #' @return A heatmap plot.
 #' @importFrom pheatmap pheatmap
 #' @export
-plotExpressionHeatmap <- function(data, scale = "none", cluster_rows = TRUE, cluster_cols = TRUE,
-                        annotation_row = NULL, annotation_col = NULL,
-                        show_rownames = TRUE, show_colnames = TRUE, ...) {
+plotExpressionHeatmap <- function(data,
+                                  scale = "none",
+                                  cluster_rows = TRUE,
+                                  cluster_cols = TRUE,
+                                  annotation_row = NULL,
+                                  annotation_col = NULL,
+                                  show_rownames = TRUE,
+                                  show_colnames = TRUE,
+                                  color_limits = c(-3, 3), ...) {
   if (!requireNamespace("pheatmap", quietly = TRUE)) {
     stop("The 'pheatmap' package is required but not installed.")
   }
 
+  # Custom color scale from royal blue to fire brick red
+  color_map <- colorRampPalette(c("royalblue", "white", "firebrick"))(100)
+
+  # Truncate data to be within specified color limits
+  data_truncated <- pmin(pmax(data, min(color_limits)), max(color_limits))
+
   # Prepare arguments for pheatmap
   args <- list(
-    mat = data,
+    mat = data_truncated,
     scale = scale,
     cluster_rows = cluster_rows,
     cluster_cols = cluster_cols,
@@ -37,6 +49,10 @@ plotExpressionHeatmap <- function(data, scale = "none", cluster_rows = TRUE, clu
     annotation_col = annotation_col,
     show_rownames = show_rownames,
     show_colnames = show_colnames,
+    color = color_map,
+    breaks = seq(from = min(color_limits),
+                 to = max(color_limits),
+                 length.out = 101),
     ...
   )
 

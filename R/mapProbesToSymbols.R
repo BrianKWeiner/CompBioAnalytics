@@ -26,10 +26,6 @@ mapProbesToSymbols <- function(eset) {
                                     columns = "SYMBOL",
                                     keytype = "PROBEID")
 
-  # Handling multiple mappings: selecting one gene symbol per probe ID
-  # This example takes the first symbol found for each probe ID
-  mappings <- mappings[!duplicated(mappings$PROBEID), ]
-
   # Create a named vector: probe IDs as names, gene symbols as values
   symbols <- setNames(mappings$SYMBOL, mappings$PROBEID)
 

@@ -13,6 +13,7 @@ plotExpressionHeatmap(
   annotation_col = NULL,
   show_rownames = TRUE,
   show_colnames = TRUE,
+  color_limits = c(-3, 3),
   ...
 )
 }

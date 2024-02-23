@@ -21,3 +21,7 @@ This function reads variant call format (VCF) files and extracts the variant inf
 The resulting data frame includes columns for the chromosome, position, ID, reference allele, alternate allele(s),
 quality, filter, and information (INFO) fields. Additional columns for genotype information may be included if present.
 }
+\examples{
+vcf_data <- readVCF("/Users/briankweiner/R_code/TestData/vcf_files/GCA_000001215.4_current_ids.sample.vcf")
+head(vcf_data)
+}

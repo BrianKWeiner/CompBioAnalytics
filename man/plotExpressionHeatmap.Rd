@@ -2,15 +2,15 @@
 % Please edit documentation in R/plotExpressionHeatmap.R
 \name{plotExpressionHeatmap}
 \alias{plotExpressionHeatmap}
-\title{Plot Heatmap of Omics Data}
+\title{Plot Heatmap of Selected Genes with Metadata Annotations}
 \usage{
 plotExpressionHeatmap(
-  data,
+  eset,
+  genes,
+  metadataCols,
   scale = "none",
   cluster_rows = TRUE,
   cluster_cols = TRUE,
-  annotation_row = NULL,
-  annotation_col = NULL,
   show_rownames = TRUE,
   show_colnames = TRUE,
   color_limits = c(-3, 3),
@@ -18,17 +18,18 @@ plotExpressionHeatmap(
 )
 }
 \arguments{
-\item{data}{A numeric matrix or data frame with rows as features (genes, proteins) and columns as samples or conditions.}
+\item{eset}{An ExpressionSet object.}
+
+\item{genes}{A character vector of gene names to be displayed in the heatmap.}
+
+\item{metadataCols}{A vector indicating which columns of the metadata to use for column annotation.
+Can be a numeric vector specifying column indices or a character vector specifying column names.}
 
 \item{scale}{A character string indicating if the data should be scaled; options are "none", "row", or "column".}
 
 \item{cluster_rows}{Logical indicating whether to cluster rows.}
 
 \item{cluster_cols}{Logical indicating whether to cluster columns.}
-
-\item{annotation_row}{A data frame of annotations to be added to the rows, or NULL if not used.}
-
-\item{annotation_col}{A data frame of annotations to be added to the columns, or NULL if not used.}
 
 \item{show_rownames}{Logical indicating whether to show row names.}
 
@@ -40,11 +41,11 @@ plotExpressionHeatmap(
 A heatmap plot.
 }
 \description{
-This function generates a heatmap of omics data (e.g., gene expression, protein abundances) using the pheatmap package.
-It offers various customization options including scaling, clustering, and annotations.
+Generates a heatmap for a subset of genes from an ExpressionSet object, using sample metadata
+for column annotations. This function allows for detailed visualization of expression data alongside
+relevant experimental context.
 }
 \examples{
-# Assuming `expr_matrix` is a matrix of gene expression data
-plotExpressionHeatmap(expr_matrix, scale = "row", cluster_rows = TRUE, cluster_cols = TRUE)
-
+# Assuming `eset` is your ExpressionSet and `selectedGenes` is a vector of gene names:
+# plotHeatmap(eset, genes = c("Gene1", "Gene2"), metadataCols = c("Condition", "Treatment"))
 }

@@ -13,4 +13,7 @@ Imports:
     Biobase,
     readr,
     VariantAnnotation,
-    GEOquery
+    GEOquery,
+    pheatmap,
+    AnnotationDbi,
+    hgu133plus2.db

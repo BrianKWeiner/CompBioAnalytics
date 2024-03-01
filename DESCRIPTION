@@ -16,4 +16,6 @@ Imports:
     GEOquery,
     pheatmap,
     AnnotationDbi,
-    hgu133plus2.db
+    hgu133plus2.db,
+    affy,
+    lubridate

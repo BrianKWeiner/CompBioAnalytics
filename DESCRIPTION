@@ -18,4 +18,5 @@ Imports:
     AnnotationDbi,
     hgu133plus2.db,
     affy,
-    lubridate
+    lubridate,
+    sva

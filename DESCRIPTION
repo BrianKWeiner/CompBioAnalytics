@@ -19,4 +19,9 @@ Imports:
     hgu133plus2.db,
     affy,
     lubridate,
-    sva
+    sva,
+    limma,
+    EnhancedVolcano,
+    ggplot2,
+    fgsea,
+    msigdbr

@@ -37,13 +37,20 @@ plotExpressionHeatmap <- function(eset,
     stop("The 'pheatmap' package is required but not installed.")
   }
 
+  eset <- GSE53552_corrected_eset
+  genes <- topVariableGenes
+  metadataCols <- columns_to_select[1:3]
+  scale <- "row"
+  cluster_rows <- TRUE
+  cluster_cols <- TRUE
+  annotation_row <- NULL
+  annotation_col <- NULL
+  show_rownames <- TRUE
+  show_colnames <- TRUE
+  color_limits <- c(-3, 3)
+
   # Extract expression data
   exprData <- exprs(eset)
-
-  # Truncate data to be within specified color limits and apply transformations
-  exprData[exprData < 0] <- 0
-  exprData <- log2(exprData + 1)
-  exprData <- pmin(pmax(exprData, min(color_limits)), max(color_limits))
 
   # Subset expression data for selected genes
   if (!all(genes %in% rownames(exprData))) {
@@ -62,25 +69,23 @@ plotExpressionHeatmap <- function(eset,
   }
 
   # Prepare the annotation as a data frame where each column is a variable to annotate the columns of the heatmap
-  annotation_col <- as.data.frame(t(metaData))
+   annotation_metadata <- as.data.frame((metaData))
 
   # Custom color scale from royal blue to fire brick red
   color_map <- colorRampPalette(c("royalblue", "white", "firebrick"))(100)
 
-  # Prepare arguments for pheatmap
-  args <- list(
-    mat = exprDataSubset,
-    annotation_col = annotation_col,
-    scale = scale,
-    cluster_rows = cluster_rows,
-    cluster_cols = cluster_cols,
-    show_rownames = show_rownames,
-    show_colnames = show_colnames,
-    color = color_map,
-    breaks = seq(from = min(color_limits), to = max(color_limits), length.out = 101),
-    ...
+
+  # pheatmap
+  pheatmap::pheatmap(mat = exprDataSubset,
+                     scale = scale,
+                     annotation_col = annotation_metadata,
+                     cluster_rows = cluster_rows,
+                     cluster_cols = cluster_cols,
+                     show_rownames = show_rownames,
+                     show_colnames = show_colnames,
+                     color = color_map,
+                     breaks = seq(from = min(color_limits), to = max(color_limits), length.out = 101)
   )
 
-  # Generate heatmap
-  do.call(pheatmap::pheatmap, args)
+
 }

@@ -4,7 +4,7 @@
 \alias{createEnrichmentPlots}
 \title{Create Enrichment Plots for Top and Bottom Ranked Pathways}
 \usage{
-createEnrichmentPlots(fgseaRes, topTableData)
+createEnrichmentPlots(fgseaRes, topTableData, mSigDBCategoryChosen)
 }
 \arguments{
 \item{fgseaRes}{Results from fgsea analysis.}
@@ -18,5 +18,6 @@ from the results of a GSEA analysis performed using the fgsea package.
 }
 \examples{
 # Assuming 'fgseaRes' contains the results from your fgsea analysis:
-# createEnrichmentPlots(fgseaRes, topTableData)
+# Assuming 'mSigDBCategoryChosen' is 'H', 'C1', 'C2', 'C3'...:
+# createEnrichmentPlots(fgseaRes, topTableData, mSigDBCategoryChosen)
 }

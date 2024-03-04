@@ -10,9 +10,10 @@
 #' @importFrom ggplot2 ggsave
 #' @examples
 #' # Assuming 'fgseaRes' contains the results from your fgsea analysis:
-#' # createEnrichmentPlots(fgseaRes, topTableData)
+#' # Assuming 'mSigDBCategoryChosen' is 'H', 'C1', 'C2', 'C3'...:
+#' # createEnrichmentPlots(fgseaRes, topTableData, mSigDBCategoryChosen)
 #' @export
-createEnrichmentPlots <- function(fgseaRes, topTableData) {
+createEnrichmentPlots <- function(fgseaRes, topTableData, mSigDBCategoryChosen) {
   requireNamespace("fgsea", quietly = TRUE)
   requireNamespace("ggplot2", quietly = TRUE)
 
@@ -20,6 +21,7 @@ createEnrichmentPlots <- function(fgseaRes, topTableData) {
   #fgseaRes <- GSEAresults
   #topTableData <- topTable
   #rankingMethod <- "t_stat"
+  #mSigDBCategoryChosen <- 'H'
 
   # Sort fgsea results by NES
   fgseaResSorted <- fgseaRes[order(fgseaRes$NES), ]
@@ -46,12 +48,11 @@ createEnrichmentPlots <- function(fgseaRes, topTableData) {
   exampleRanks <- rankedList
 
 
-  msigdbGeneSets <- msigdbr::msigdbr(species = "Homo sapiens")
+  msigdbGeneSets <- msigdbr::msigdbr(species = "Homo sapiens", category = mSigDBCategoryChosen)
   geneSets <- split(msigdbGeneSets$gene_symbol, msigdbGeneSets$gs_name)
 
   # Generate enrichment plots
   plots <- lapply(selectedPathways$pathway, function(pathway) {
-
     cleanTitle <- gsub("_", " ", pathway)
 
     pd <- plotEnrichmentData(
@@ -59,35 +60,38 @@ createEnrichmentPlots <- function(fgseaRes, topTableData) {
       stats = unlist(rankedList)
     )
 
-    # Enhance it to make it look nicer
-    with(pd,
-         ggplot(data=curve) +
-           ggtitle(cleanTitle) +
-           geom_line(aes(x=rank, y=ES), color="green") +
-           geom_ribbon(data=stats,
-                       mapping=aes(x=rank, ymin=0,
-                                   ymax=stat/maxAbsStat*(spreadES/4)),
-                       fill="grey") +
-           geom_segment(data=ticks,
-                        mapping=aes(x=rank, y=-spreadES/16,
-                                    xend=rank, yend=spreadES/16),
-                        size=0.2) +
-           geom_hline(yintercept=posES, colour="red", linetype="dashed") +
-           geom_hline(yintercept=negES, colour="red", linetype="dashed") +
-           geom_hline(yintercept=0, colour="black") +
-           theme(
-             panel.background = element_blank(),
-             panel.grid.major=element_line(color="grey92")
-           ) +
-           labs(x="rank", y="enrichment score"))
-    return(pd)
+    # Assuming plotEnrichmentData correctly prepares data for a ggplot
+    plot <- with(pd, {
+      ggplot(data=curve) +
+        ggtitle(cleanTitle) +
+        geom_line(aes(x=rank, y=ES), color="green") +
+        geom_ribbon(data=stats,
+                    mapping=aes(x=rank, ymin=0,
+                                ymax=stat/maxAbsStat*(spreadES/4)),
+                    fill="grey") +
+        geom_segment(data=ticks,
+                     mapping=aes(x=rank, y=-spreadES/16,
+                                 xend=rank, yend=spreadES/16),
+                     size=0.2) +
+        geom_hline(yintercept=posES, colour="red", linetype="dashed") +
+        geom_hline(yintercept=negES, colour="red", linetype="dashed") +
+        geom_hline(yintercept=0, colour="black") +
+        theme(
+          panel.background = element_blank(),
+          panel.grid.major=element_line(color="grey92")
+        ) +
+        labs(x="rank", y="enrichment score")
+    })
+
+    return(plot)  # Ensure this is the last expression to return the ggplot object
   })
 
-  # Optionally, save plots to files
+
+  # Save plots to files
   lapply(seq_along(plots), function(i) {
     ggplot2::ggsave(filename = paste0("enrichment_plot_", i, ".png"),
                     plot = plots[[i]],
-                    device = "png")
+                    device = "png",width = 6, height = 4, units = "in")
   })
 
   return(plots)

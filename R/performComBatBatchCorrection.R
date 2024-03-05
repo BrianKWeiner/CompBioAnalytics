@@ -23,7 +23,7 @@ performComBatBatchCorrection <- function(affyData, batchInfo) {
 
   # Ensure the order of batchInfo matches the order of samples in affyData
   sampleNames <- colnames(exprData)
-  batchInfo <- batchInfo[match(sampleNames, batchInfo$FileName), ]
+  batch <- batch[match(sampleNames, batchInfo$FileName), ]
 
   # Perform ComBat correction
   batch <- factor(batchInfo$Batch)

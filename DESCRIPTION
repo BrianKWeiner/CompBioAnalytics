@@ -24,4 +24,8 @@ Imports:
     EnhancedVolcano,
     ggplot2,
     fgsea,
-    msigdbr
+    msigdbr,
+    massiR,
+    imsig,
+    Rtsne,
+    cowplot

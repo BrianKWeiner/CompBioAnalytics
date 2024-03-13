@@ -31,17 +31,17 @@ plotTopGenesBoxplot <- function(topTableData, eset, group1, group2) {
 
   #Testing
   #topTableData <- topTable
-  #eset <- GSE53552_with_arms
-  #group1 <- "lesional_skin_NA_pre_dose"
-  #group2 <- "non_lesional_skin_NA_pre_dose"
+  #eset <- GSE145513_eset_unique_genes
+  #group1 <- unique_arms_GSE145513[1]
+  #group2 <- unique_arms_GSE145513[2]
 
   # Split the data into up- and down-regulated genes based on logFC
   upRegulated <- topTableData[topTableData$logFC > 0, ]
   downRegulated <- topTableData[topTableData$logFC < 0, ]
 
   # Rank each group by ascending p-value and select the top 10
-  topUp <- head(upRegulated[order(upRegulated$adj.P.Val, decreasing = FALSE),], 20)
-  topDown <- head(downRegulated[order(downRegulated$adj.P.Val, decreasing = FALSE),], 20)
+  topUp <- head(upRegulated[order(upRegulated$P.Val, decreasing = FALSE),], 20)
+  topDown <- head(downRegulated[order(downRegulated$P.Val, decreasing = FALSE),], 20)
 
   # Combine the top 20 up- and down-regulated genes
   topGenes <- rbind(topUp, topDown)
@@ -52,7 +52,7 @@ plotTopGenesBoxplot <- function(topTableData, eset, group1, group2) {
   # Extract expression data for top genes
   exprData <- exprs(eset)[rownames(exprs(eset)) %in% rownames(topGenes), ]
 
-  # Rearrange the exprDATA so it is in the same order as topGens
+  # Rearrange the exprDATA so it is in the same order as topGenes
   exprData <- exprData[match(rownames(topGenes), rownames(exprData)),]
 
   exprData <- data.frame(exprData)
@@ -74,9 +74,17 @@ plotTopGenesBoxplot <- function(topTableData, eset, group1, group2) {
 
   exprDataLong <- exprDataLongFilteredArm
 
+  group1Clean <- gsub("_", " ", group1)
+  group1Clean <- gsub("(.{15,}?)\\s", "\\1\n", group1Clean)
+
+  group2Clean <- gsub("_", " ", group2)
+  group2Clean <- gsub("(.{15,}?)\\s", "\\1\n", group2Clean)
+
   # Clean ARM information: replace underscores with spaces, and break long strings
   exprDataLong$ARM <- gsub("_", " ", exprDataLong$ARM)
   exprDataLong$ARM <- gsub("(.{15,}?)\\s", "\\1\n", exprDataLong$ARM)
+
+  exprDataLong$ARM <- factor(exprDataLong$ARM, levels = c(group1Clean, group2Clean), ordered = T)
 
   # Format p-values and  adjusted p-values for better legibility
   exprDataLong$P.value <- ifelse(nchar(as.character(exprDataLong$P.value)) > 6,
@@ -88,9 +96,9 @@ plotTopGenesBoxplot <- function(topTableData, eset, group1, group2) {
 
 
   format_p_value <- function(adj.p.value) {
-    ifelse(p_value < 0.05,
-           sprintf("adj. p: %s", sub("e", " x 10^", format(p_value, scientific = TRUE))),
-           sprintf("adj. p: %s", format(p_value, scientific = FALSE)))
+    ifelse(adj.p.value < 0.05,
+           sprintf("adj. p: %s", sub("e", " x 10^", format(adj.p.value, scientific = TRUE))),
+           sprintf("adj. p: %s", format(adj.p.value, scientific = FALSE)))
   }
 
   # Split the data based on the sign of the T-statistic
@@ -99,6 +107,7 @@ plotTopGenesBoxplot <- function(topTableData, eset, group1, group2) {
 
   # Function to create plots
   create_plot <- function(data, title, subtitle) {
+    data <- upRegulated
     # Use gene symbol as facet labels and include formatted adjusted p-value
     data$FacetLabel <- paste(data$GeneSymbol, "\n(", lapply(data$adj.P.Val, format_p_value), ")", sep="")
 

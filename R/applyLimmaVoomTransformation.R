@@ -16,13 +16,16 @@ applyLimmaVoomTransformation <- function(eset) {
   if (!requireNamespace("Biobase", quietly = TRUE)) stop("Package 'Biobase' is required but not installed.")
   if (!requireNamespace("limma", quietly = TRUE)) stop("Package 'limma' is required but not installed.")
 
+  # For testing
+  #eset <- GSE145513_eset
+
   # Extract count data from the ExpressionSet
   counts <- Biobase::exprs(eset)
 
   # Apply Limma-Voom transformation
   # Design matrix, assuming a basic case. Adjust as needed for your study.
   design <- model.matrix(~ 1, data = Biobase::pData(eset))
-  v <- limma::voom(counts, design)
+  v <- limma::voom(counts, design, plot = TRUE)
 
   # Create a new ExpressionSet with the transformed data
   eset_transformed <- new("ExpressionSet",

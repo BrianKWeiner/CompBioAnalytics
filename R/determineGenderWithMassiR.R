@@ -13,7 +13,7 @@ determineGenderWithMassiR <- function(eset) {
   }
 
   # For testing
-  eset <- GSE53552_rma
+  #eset <- GSE53552_rma
 
   data(y.probes)
   # This package currently supports:

@@ -22,9 +22,10 @@ performDGEAnalysisByLimma <- function(eset, group1, group2) {
     stop("Input must be an ExpressionSet object.")
   }
 
-  #eset <- GSE53552_with_arms
-  #group1 <- unique_arms_GSE53552[5]
-  #group2 <- unique_arms_GSE53552[6]
+  # For testing
+  #eset <- GSE145513_eset_unique_genes
+  #group1 <- unique_arms_GSE145513[1]
+  #group2 <- unique_arms_GSE145513[2]
 
   # Access expression data and ARM data
   exprData <- exprs(eset)
@@ -43,11 +44,11 @@ performDGEAnalysisByLimma <- function(eset, group1, group2) {
 
 
   # Design matrix for limma analysis
-  design <- model.matrix(~ groupFactor)
+  design <- model.matrix(~0+groupFactor)
 
   colnames(design) <- gsub("groupFactor", "", colnames(design))
   colnames(design) <- gsub("\\(Intercept\\)", "Intercept", colnames(design))
-  colnames(design)
+  #colnames(design)
 
   # Specify the contrast explicitly (group1 - group2)
   cmd <- paste0("contrastMatrix <- limma::makeContrasts(", group1, "-", group2, ", levels = design)")

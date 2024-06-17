@@ -21,6 +21,9 @@ createArmsFromMetaDataGSE145513 <- function(eset) {
   # Access the phenotype data
   phenoData <- Biobase::pData(eset)
 
+  phenoData$characteristics_ch14 <- paste0(phenoData$`characteristics_ch1.2`, "_",
+                                           phenoData$`characteristics_ch1.3`)
+
   # Ensure required columns exist
   requiredColumns <- c("characteristics_ch14")
   if (!all(requiredColumns %in% colnames(phenoData))) {
@@ -29,6 +32,7 @@ createArmsFromMetaDataGSE145513 <- function(eset) {
 
   phenoData$ARM <- phenoData$characteristics_ch14
 
+  # Cleans up the special characters that complicate things letter when it comes to graphing
   phenoData$ARM <- gsub("agent: ", "", phenoData$ARM)
   phenoData$ARM <- gsub("\\+", "_pos", phenoData$ARM)
   phenoData$ARM <- gsub("-", "_neg", phenoData$ARM)

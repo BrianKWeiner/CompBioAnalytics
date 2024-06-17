@@ -14,7 +14,7 @@
 #' eset <- createExpressionSetFromGEORnaSeq("GSE145513", "/Users/briankweiner/R_code/TestData/geo_files/GSE145513_count.txt.gz")
 #'
 #' @export
-createExpressionSetFromGEORnaSeq <- function(softFilePath, countDataPath) {
+createExpressionSetFromGEORnaSeq <- function(softGSEID, countDataPath) {
   if (!requireNamespace("Biobase", quietly = TRUE)) stop("Package 'Biobase' is needed but not installed.")
   if (!requireNamespace("data.table", quietly = TRUE)) stop("Package 'data.table' is needed but not installed.")
 
@@ -22,37 +22,12 @@ createExpressionSetFromGEORnaSeq <- function(softFilePath, countDataPath) {
   #softGSEID <- "GSE145513"
   #countDataPath <- "/Users/briankweiner/R_code/TestData/geo_files/GSE145513_count.txt.gz"
 
-  geoFile = GEOquery::getGEOfile(softGSEID, AnnotGPL = TRUE, amount = "full")
+  geoFile = GEOquery::getGEO(softGSEID, GSEMatrix = TRUE, getGPL = FALSE)
 
   # Step 1: Read and parse the SOFT file for metadata
-  rawMetadataUnprocessed <- geoFile
+  processedMetadata <- pData(phenoData(geoFile[[1]]))
+  processedMetadata$GSM_ID <- processedMetadata$geo_accession
 
-  extractAllGsmHeaders <- function(rawMetadata) {
-    # Initialize an empty list to store header information for each GSM
-    all_headers <- list()
-
-    # Iterate over the GSM entries
-    gsm_ids <- names(rawMetadata@gsms)
-    for (gsm_id in gsm_ids) {
-      # Extract the complete header for the current GSM
-      header_info <- rawMetadata@gsms[[gsm_id]]@header
-
-      # Convert the list of header information to a named vector
-      header_vector <- unlist(header_info)
-
-      # Store the named vector as a dataframe in the list, with GSM ID as the row name
-      all_headers[[gsm_id]] <- as.data.frame(t(header_vector), stringsAsFactors = FALSE)
-      rownames(all_headers[[gsm_id]]) <- gsm_id
-    }
-
-    # Use smart binding to handle different columns across GSMs
-    library(dplyr)
-    headers_df <- bind_rows(all_headers, .id = "GSM_ID")
-
-    return(headers_df)
-  }
-
-  processedMetadata <- extractAllGsmHeaders(rawMetadata)
 
   # Step 2: Load count data
   exprData <- data.table::fread(countDataPath)
@@ -123,18 +98,14 @@ createExpressionSetFromGEORnaSeq <- function(softFilePath, countDataPath) {
     return(gene_info_collapsed)
   }
 
+  # Assuming gene_info_df is the dataframe returned by fetchGeneInfo
+  gene_info_df_collapsed <- collapseGeneInfo(gene_info_df)
+
   # Convert row names of exprData to a dataframe
   exprData_genes <- data.frame(ensembl_gene_id = rownames(exprData))
 
-  # Ensure gene_info_df_collapsed has ensembl_gene_id as a column if not already
-  # Assuming gene_info_df_collapsed already structured correctly from previous steps
-
   # Perform a left join to match exprData genes with collapsed gene info
   final_gene_info <- left_join(exprData_genes, gene_info_df_collapsed, by = "ensembl_gene_id")
-
-
-  # Assuming gene_info_df is the dataframe returned by fetchGeneInfo
-  gene_info_df_collapsed <- collapseGeneInfo(gene_info_df)
 
   cleanNAValues <- function(df) {
     df <- df %>%
@@ -161,7 +132,7 @@ createExpressionSetFromGEORnaSeq <- function(softFilePath, countDataPath) {
 
   newExprDataMatrix <- newExprDataMatrix[, rownames(phenoData)]
 
-  colnames(newExprDataMatrix2)
+  colnames(newExprDataMatrix)
   rownames(phenoData)
 
   eset <- Biobase::ExpressionSet(assayData = newExprDataMatrix,

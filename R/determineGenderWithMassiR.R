@@ -3,6 +3,7 @@
 #' @param eset An ExpressionSet object containing expression data and phenotype data.
 #' @return An ExpressionSet object with an added column in phenoData called PredictedGender.
 #' @importFrom massiR massi_y massi_y_plot massi_cluster massi_cluster_plot
+#' @importFrom Biobase phenoData pData
 #' @examples
 #' # Assuming 'eset' is your ExpressionSet object:
 #' esetWithGender <- determineGenderWithMassiR(eset)
@@ -42,7 +43,7 @@ determineGenderWithMassiR <- function(eset) {
 
 
   # Add PredictedGender to the phenotype data of the ExpressionSet
-  phenoData <- pData(eset)
+  phenoData <- Biobase::pData(eset)
   phenoData$PredictedGender <- resultsOfGenderPrediction$massi.results$sex
 
   # Recommended code from vignette:
@@ -59,7 +60,7 @@ determineGenderWithMassiR <- function(eset) {
   #phenoData(eset) <- newPhenoData
 
   # Update the ExpressionSet with the new phenotype data
-  pData(eset) <- phenoData
+  Biobase::pData(eset) <- phenoData
 
   return(eset)
 }
